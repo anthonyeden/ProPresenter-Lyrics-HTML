@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="css/core.css"/>
+        <script type="text/javascript" src="config.js"></script>
+        <script type="text/javascript" src="js/core.js"></script>
+        <script>
+            lyricBlocks = document.getElementsByClassName('lyrics');
+            var last_slide = [];
+            var word = 0;
+            var ball_width = 10;
+
+            var LastX = 0;
+            var LastY = 0;
+            var NewX = 0;
+            var NewY = 0;
+            var LastStart = 0;
+            var ReachedY = false;
+
+            function callback_lyrics_current(lines) {
+                if(lines.length == 0) {
+                    for(var i = 0; i < lyricBlocks.length; i++) {
+                        lyricBlocks[i].style.opacity = '0';
+                    }
+                    setTimeout(function() {lyrics_render([]);}, 500);
+                    ball.style.opacity = 0;
+                } else {
+                    clear_timeouts();
+                    lyrics_render(lines);
+                }
+            }
+
+            function lyrics_render(lines) {
+
+                if(!arrays_equal(lines, last_slide)) {
+                    last_slide = lines;
+                    word = 0;
+                } else {
+                    word++;
+                }
+
+                html = lyrics_text_html_words(lines);
+                lyricBlocks[0].innerHTML = html;
+
+                // Ensure the text is visible
+                if(html != '') {
+                    lyricBlocks[0].style.opacity = '1';
+
+                    // Sort out the ball animation
+                    ball = document.getElementById("ball");
+                    word_elems = document.getElementsByClassName('word');
+                    word_elem = word_elems[word];
+                    
+                    LastX = NewX;
+                    LastY = NewY;
+                    NewX = (word_elem.offsetWidth / 2) + word_elem.offsetLeft - ball_width;
+                    NewY = word_elem.offsetTop - 10;
+                    LastStart = + new Date();
+                    ReachedY = false;
+                }
+            }
+
+            function lyrics_text_html_words(lines) {
+                // A version of lyrics_text_html() which wraps every word in a <span>
+                var html = '';
+                for(var lineI in lines) {
+                    var line = lines[lineI].trim();
+                    if(line != "") {
+                        html += '<p><span>';
+                        words = line.split(" ");
+                        for(var wordI in words) {
+                            var word = words[wordI].trim();
+                            if(word != '') {
+                                html += '<span class="word">'+word+'</span> ';
+                            }
+                        }
+                        html += '</span></p>';
+                    }
+                }
+                return html;
+            }
+
+            function arrays_equal(a, b) {
+                // From https://stackoverflow.com/a/16436975
+                if (a === b) return true;
+                if (a == null || b == null) return false;
+                if (a.length != b.length) return false;
+
+                for (var i = 0; i < a.length; ++i) {
+                    if (a[i] !== b[i]) return false;
+                }
+                return true;
+            }
+
+            function get_position(elem) {
+                // From https://stackoverflow.com/a/9040869
+                var dims = {offsetLeft:0, offsetTop:0};
+
+                do {
+                    dims.offsetLeft += elem.offsetLeft;
+                    dims.offsetTop += elem.offsetTop;
+                }
+
+                while (elem = elem.offsetParent);
+
+                return dims;
+            }
+
+            (function() {
+                window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+                function step(timestamp) {
+                    // Animate the ball between two positions
+                    // Based on https://www.the-art-of-web.com/javascript/animate-curved-path/
+
+                    progress = (+ new Date() - LastStart) / 1000 * 4;
+
+                    if(LastX == 0 || LastX > NewX) {
+                        ball.style.opacity = 1;
+                        LastX = NewX - 100;
+                        LastY = NewY;
+                    }
+
+                    x = LastX + (progress * (NewX-LastX));
+                    originY = LastY + (NewY - LastY) / 2;
+                    radius = (NewX - LastX) / 2;
+                    radians = 3 + (progress * Math.PI);
+                    y = originY + radius * Math.sin(radians);
+
+                    // Move the ball
+                    if(x < NewX) {
+                        ball.style.left = x + 'px';
+                        ball.style.top = y + 'px';
+                    }
+
+                    requestAnimationFrame(step);
+                }
+                requestAnimationFrame(step);
+            })();
+        </script>
+        <style>
+            .lyrics {
+                transition: opacity 200ms 200ms;
+                text-transform: uppercase;
+                color: #333;
+                text-shadow: none;
+            }
+            #ball {
+                position: absolute;
+                width: 1em;
+                height: 1em;
+                border-radius: 0.5em;
+                background: #09F;
+                opacity: 0;
+                transition: opacity 200ms 200ms;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container center" id="container">
+            <div class="ball" id="ball" style="left: 0; top: 0;"></div>
+            <div class="lyrics"><!-- Lyrics go here --></div>
+        </div>
+    </body>
+</html>
