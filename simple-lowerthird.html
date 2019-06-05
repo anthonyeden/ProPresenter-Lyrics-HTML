@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="css/core.css"/>
+        <script type="text/javascript" src="config.js"></script>
+        <script type="text/javascript" src="js/core.js"></script>
+        <script>
+            lyricBlocks = document.getElementsByClassName('lyrics');
+
+            function callback_lyrics_current(lines) {
+                if(lines.length == 0) {
+                    for(var i = 0; i < lyricBlocks.length; i++) {
+                        lyricBlocks[i].style.opacity = '0';
+                    }
+                    setTimeout(function() {lyrics_render([]);}, 500);
+                } else {
+                    clear_timeouts();
+                    lyrics_render(lines);
+                }
+            }
+
+            function lyrics_render(lines) {
+                html = lyrics_text_html(lines);
+                lyricBlocks[0].innerHTML = html;
+
+                // Ensure the text is visible
+                if(html != '') {
+                    lyricBlocks[0].style.opacity = '1';
+                }
+            }
+        </script>
+        <style>
+            .lyrics {
+                transition: opacity 200ms 200ms;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container lowerthird">
+            <div class="lyrics"><!-- Lyrics go here --></div>
+        </div>
+    </body>
+</html>
