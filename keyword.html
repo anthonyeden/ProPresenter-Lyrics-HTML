@@ -105,7 +105,7 @@
                         html += '<p><span class="line_start">';
                         longest_word_i = 0;
                         longest_word_len = 0;
-                        for(let i = 1; i < words.length - 1; i++) {
+                        for(let i = 0; i < words.length; i++) {
                             // Find the longest word to use in the middle
                             if(words[i].length > longest_word_len) {
                                 longest_word_len = words[i].length;
