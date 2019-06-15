@@ -10,7 +10,7 @@
 
             function callback_lyrics_current(lines) {
                 // Build new inner HTML for lyrics
-                html = lyrics_text_html(lines);
+                html = lyrics_text_html_perchar(lines);
                 newId = new Date().getTime().toString();
 
                 if(html == last_lyrics_text) {
@@ -31,16 +31,17 @@
                     }
 
                     lyricLinesExisting = lyricBlocksExisting[b].getElementsByTagName('span');
-
+                    
                     for(var i = 0; i < lyricLinesExisting.length; i++) {
-                        lyricLinesExisting[i].style.marginTop = '2.2rem';
+                        lyricLinesExisting[i].style.animation = 'anout 0.5s';
+                        lyricLinesExisting[i].style.opacity = '0';
                     }
 
                     setTimeout(function(block) {
-                        if(typeof block !== 'undefined') {
+                        if(typeof block !== 'undefined' && block.parentNode != null) {
                             block.parentNode.removeChild(block);
                         }
-                    }, 650, lyricBlocksExisting[b]);
+                    }, 600, lyricBlocksExisting[b]);
                 }
 
                 if(html == '') {
@@ -55,23 +56,28 @@
                 lines = newElement.getElementsByTagName('span');
 
                 // The lyric lines all start out of frame
+                var animationDelay = 6;
                 for(var i = 0; i < lines.length; i++) {
-                    lines[i].style.marginTop = "-2.2rem";
+                    lines[i].style['animation-delay'] = animationDelay * i + 'ms';
                 }
 
                 // Add new lyrics to DOM
                 document.getElementById('container').appendChild(newElement);
 
-                // Animate in new lyrics
-                setTimeout(function() {
-                    newElements = document.getElementsByClassName('lyrics');
-                    newElement = newElements[newElements.length - 1];
-                    lines = newElement.getElementsByTagName('span');
-                    
-                    for(var i = 0; i < lines.length; i++) {
-                        lines[i].style.marginTop = "0px";
+            }
+            function lyrics_text_html_perchar(lines) {
+                var html = '';
+                for(var lineI in lines) {
+                    var line = lines[lineI].trim();
+                    if(line != "") {
+                        html += '<p>';
+                        for(let i = 0; i < line.length; i++) {
+                            html += '<span class="char">' + (line[i] == ' ' ? '&nbsp;' : line[i])+ '</span>';
+                        }
+                        html += '</p>';
                     }
-                }, 50);
+                }
+                return html;
             }
         </script>
         <style>
@@ -94,15 +100,32 @@
                 display: block;
                 height: 2.2rem;
                 margin-bottom: 1rem;
-                overflow: hidden;
                 width: 100%;
             }
             .lyrics p span {
-                transition-delay: 0s;
-                transition: 0.3s;
-                transition-timing-function: ease-in;
-                display: block;
-                margin-top: -50px;
+                animation: anin 0.7s ease-out 1 both;
+                display: inline-block;
+
+            }
+            @keyframes anin {
+                from {
+                    opacity: 0;
+                    transform: perspective(100px) translate3d(0, 0, 500px) rotate3d(1, -1, 0, 35deg);
+                }
+                to {
+                    opacity: 1;
+                    transform: perspective(500px) translate3d(0, 0, 0);
+                }
+            }
+            @keyframes anout {
+                from {
+                    opacity: 1;
+                    transform: perspective(500px) translate3d(0, 0, 0);
+                }
+                to {
+                    opacity: 0;
+                    transform: perspective(500px) translate3d(5px, 5px, 5px) rotate3d(1, -1, 0, 35deg);
+                }
             }
         </style>
     </head>
