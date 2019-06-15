@@ -16,7 +16,7 @@ body {
     align-self: flex-end;
 }
 
-.lyrics.uppercase {
+.uppercase .lyrics {
     text-transform: uppercase;
 }
 

@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="css/core.css"/>
+        <script type="text/javascript" src="config.js"></script>
+        <script type="text/javascript" src="js/core.js"></script>
+        <script>
+            lyricBlocks = document.getElementsByClassName('lyrics');
+            last_lyrics_text = '';
+
+            function callback_lyrics_current(lines) {
+                // Build new inner HTML for lyrics
+                html = lyrics_text_html(lines);
+                newId = new Date().getTime().toString();
+
+                if(html == last_lyrics_text) {
+                    // Don't re-animate if the two slides are the same
+                    return true;
+                }
+
+                last_lyrics_text = html;
+
+                // Delete existing lyrics
+                lyricBlocksExisting = document.getElementsByClassName('lyrics');
+
+                for(var b = 0; b < lyricBlocksExisting.length; b++) {
+
+                    thisId = lyricBlocksExisting[b].id;
+                    if(thisId == newId) {
+                        continue;
+                    }
+
+                    lyricLinesExisting = lyricBlocksExisting[b].getElementsByTagName('span');
+
+                    for(var i = 0; i < lyricLinesExisting.length; i++) {
+                        lyricLinesExisting[i].style.marginTop = '2.2rem';
+                    }
+
+                    setTimeout(function(block) {
+                        if(typeof block[b] !== 'undefined') {
+                            block.parentNode.removeChild(lyricBlocksExisting[b]);
+                        }
+                    }, 650, lyricBlocksExisting[b]);
+                }
+
+                if(html == '') {
+                    return true;
+                }
+
+                // Create new lyrics
+                newElement = document.createElement("div");
+                newElement.className = "lyrics";
+                newElement.id = newId;
+                newElement.innerHTML = html;
+                lines = newElement.getElementsByTagName('span');
+
+                // The lyric lines all start out of frame
+                for(var i = 0; i < lines.length; i++) {
+                    lines[i].style.marginTop = "-2.2rem";
+                }
+
+                // Add new lyrics to DOM
+                document.getElementById('container').appendChild(newElement);
+
+                // Animate in new lyrics
+                setTimeout(function() {
+                    newElements = document.getElementsByClassName('lyrics');
+                    newElement = newElements[newElements.length - 1];
+                    lines = newElement.getElementsByTagName('span');
+                    
+                    for(var i = 0; i < lines.length; i++) {
+                        lines[i].style.marginTop = "0px";
+                    }
+                }, 50);
+            }
+        </script>
+        <style>
+            .container {
+                display: block;
+            }
+            .lyrics {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+            .lyrics p {
+                display: block;
+                height: 2.2rem;
+                margin-bottom: 1rem;
+                overflow: hidden;
+                width: 100%;
+            }
+            .lyrics p span {
+                transition-delay: 0s;
+                transition: 0.3s;
+                transition-timing-function: ease-in;
+                display: block;
+                margin-top: -50px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container center uppercase" id="container">
+            <div class="lyrics" id="0"><!-- Lyrics go here --></div>
+        </div>
+    </body>
+</html>
