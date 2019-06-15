@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="css/core.css"/>
+        <script type="text/javascript" src="config.js"></script>
+        <script type="text/javascript" src="js/core.js"></script>
+        <script>
+            lyricBlocks = document.getElementsByClassName('lyrics');
+            last_lyrics_text = '';
+
+            function callback_lyrics_current(lines) {
+                // Build new inner HTML for lyrics
+
+                // Merge all lines - this template only works peoperly with one line per slide
+                if(lines.length > 1) {
+                    lines = [ lines.join(" ") ];
+                }
+
+                html = lyrics_text_html_keyword(lines);
+                newId = new Date().getTime().toString();
+
+                if(html == last_lyrics_text) {
+                    // Don't re-animate if the two slides are the same
+                    return true;
+                }
+
+                last_lyrics_text = html;
+
+                // Delete existing lyrics
+                lyricBlocksExisting = document.getElementsByClassName('lyrics');
+
+                for(var b = 0; b < lyricBlocksExisting.length; b++) {
+
+                    thisId = lyricBlocksExisting[b].id;
+                    if(thisId == newId) {
+                        continue;
+                    }
+
+                    lyricLinesExisting = lyricBlocksExisting[b].getElementsByTagName('span');
+                    
+                    for(var i = 0; i < lyricLinesExisting.length; i++) {
+                        lyricLinesExisting[i].style.animation = 'anout 0.2s';
+                        lyricLinesExisting[i].style.opacity = '0';
+                    }
+
+                    setTimeout(function(block) {
+                        if(typeof block !== 'undefined' && block.parentNode != null) {
+                            block.parentNode.removeChild(block);
+                        }
+                    }, 300, lyricBlocksExisting[b]);
+                }
+
+                if(html == '') {
+                    return true;
+                }
+
+                // Create new lyrics
+                newElement = document.createElement("div");
+                newElement.className = "lyrics";
+                newElement.id = newId;
+                newElement.innerHTML = html;
+                lines = newElement.getElementsByTagName('span');
+
+                // The lyric lines all start out of frame
+                var animationDelay = 6;
+                for(var i = 0; i < lines.length; i++) {
+                    lines[i].style['animation-delay'] = animationDelay * i + 'ms';
+                }
+
+                // Add new lyrics to DOM
+                document.getElementById('container').appendChild(newElement);
+
+                // Make the keyword text fit
+                keywordElem = newElement.getElementsByClassName("keyword")[0]
+                keywordFontSize = 1000;
+                keywordElem.style.fontSize = keywordFontSize + 'px';
+                keywordWidth = keywordElem.offsetWidth;
+                viewportWidth = document.getElementsByClassName("lyrics")[0].offsetWidth;
+
+                while(keywordWidth > viewportWidth) {
+                    // Keep decreasing the font size until it fits within the viewport
+                    keywordFontSize--;
+                    keywordElem.style.fontSize = keywordFontSize + 'px';
+                    keywordWidth = keywordElem.offsetWidth;
+                }
+
+                keywordElem.style.lineHeight = (keywordFontSize - 50) + 'px';
+
+            }
+            function lyrics_text_html_keyword(lines) {
+                var html = '';
+                for(var lineI in lines) {
+                    var line = lines[lineI].trim();
+                    if(line != "") {
+                        var words = line.split(' ');
+
+                        html += '<p><span class="line_start">';
+                        longest_word_i = 0;
+                        longest_word_len = 0;
+                        for(let i = 1; i < words.length - 1; i++) {
+                            // Find the longest word to use in the middle
+                            if(words[i].length > longest_word_len) {
+                                longest_word_len = words[i].length;
+                                longest_word_i = i;
+
+                            }
+                        }
+                        for(let i = 0; i < words.length; i++) {
+                            if(i == longest_word_i) {
+                                html += '</span><span><span class="keyword" id="keyword">' + words[i] + '</span></span><span class="line_end">';
+                            } else {
+                                html += words[i] + "&nbsp;";
+                            }
+                        }
+                        html += '</span></p>';
+                    }
+                }
+                return html;
+            }
+        </script>
+        <style>
+            .container {
+                display: block;
+            }
+            .lyrics {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: calc(100% - 4rem);
+                height: 100vh;
+
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+            .lyrics p {
+                display: block;
+                width: 100%;
+            }
+            .lyrics p > span {
+                animation: anin 0.3s ease-out 1 both;
+                display: block;
+                width: 100%;
+                position: relative; /* So Z-Index works */
+            }
+            .lyrics p span.keyword {
+                font-family: 'Blackflower', sans-serif;
+                z-index: 50;
+            }
+            .lyrics p span.line_start {
+                text-align: left;
+                z-index: 100;
+            }
+            .lyrics p span.line_end {
+                text-align: right;
+                z-index: 100;
+            }
+            @keyframes anin {
+                from {
+                    opacity: 0;
+                    transform: perspective(100px) translate3d(0, 0, 500px) rotate3d(1, -1, 0, 35deg);
+                }
+                to {
+                    opacity: 1;
+                    transform: perspective(500px) translate3d(0, 0, 0);
+                }
+            }
+            @keyframes anout {
+                from {
+                    opacity: 1;
+                    transform: perspective(500px) translate3d(0, 0, 0);
+                }
+                to {
+                    opacity: 0;
+                    transform: perspective(500px) translate3d(5px, 5px, 5px) rotate3d(1, -1, 0, 35deg);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container center uppercase" id="container">
+            <div class="lyrics" id="0"><!-- Lyrics go here --></div>
+        </div>
+    </body>
+</html>
