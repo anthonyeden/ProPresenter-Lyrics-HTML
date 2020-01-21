@@ -82,6 +82,11 @@ Connection.prototype.message = function(msg) {
                 }
             }
         }
+    } else if (msg.acn == "sys") {
+        // Clock update
+        if(typeof callback_clock === 'function') {
+            callback_clock(msg.txt);
+        }
     }
 }
 

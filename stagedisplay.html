@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="css/core.css"/>
+        <style>
+            body {
+                background-color: #000;
+                color: #FFF;
+                font-size: 3rem;
+                font-family: sans-serif;
+                font-weight: bold;
+                padding: 2rem;
+            }
+            .container {
+                flex-direction: column;
+            }
+            .container > div {
+                margin-bottom: 2rem;
+            }
+            .container > div:last-child {
+                margin-top: auto;
+                padding-bottom: 2rem;
+                color: #e3db00;
+            }
+            p {
+                margin: 0;
+            }
+            .clock {
+                font-style: italic;
+            }
+        </style>
+        <link rel="stylesheet" href="css/user.css"/>
+        <script type="text/javascript" src="config.js"></script>
+        <script type="text/javascript" src="js/core.js"></script>
+        <script>
+            lyric_currentBlocks = document.getElementsByClassName('lyrics_current');
+            lyric_nextBlocks = document.getElementsByClassName('lyrics_next');
+            clockBlocks = document.getElementsByClassName('clock');
+
+            function callback_lyrics_current(lines) {
+                html = lyrics_text_html(lines);
+                lyric_currentBlocks[0].innerHTML = html;
+            }
+            function callback_lyrics_next(lines) {
+                html = lyrics_text_html(lines);
+                lyric_nextBlocks[0].innerHTML = html;
+            }
+            function callback_clock(lines) {
+                clockBlocks[0].innerHTML = lines;
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="clock"><!-- Clock goes here --></div>
+            <div class="lyrics_current"><!-- Lyrics go here --></div>
+            <div class="lyrics_next"><!-- Lyrics go here --></div>
+        </div>
+    </body>
+</html>
