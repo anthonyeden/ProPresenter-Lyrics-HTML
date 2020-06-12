@@ -45,8 +45,9 @@
                 html = lyrics_text_html(lines);
                 lyric_nextBlocks[0].innerHTML = html;
             }
-            function callback_clock(lines) {
-                clockBlocks[0].innerHTML = lines;
+            function callback_clock(lines, locale) {
+                const clockObj = new Date(lines * 1000);
+                clockBlocks[0].innerHTML = clockObj.toLocaleTimeString(locale);
             }
         </script>
     </head>
