@@ -11,6 +11,7 @@ var Connection = function() {
     this.password = config['Password'];
     this.url = 'ws://' + this.ip  + ':' + this.port + '/stagedisplay';
     this.closing = false;
+    this.clockLocale = config['ClockLocale'];
 
     return this;
 }
@@ -85,7 +86,7 @@ Connection.prototype.message = function(msg) {
     } else if (msg.acn == "sys") {
         // Clock update
         if(typeof callback_clock === 'function') {
-            callback_clock(msg.txt);
+            callback_clock(msg.txt, this.clockLocale);
         }
     }
 }
