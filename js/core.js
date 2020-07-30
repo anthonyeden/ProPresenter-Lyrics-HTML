@@ -114,7 +114,13 @@ function lyric_text_cleanup(text) {
         return '&#'+i.charCodeAt(0)+';';
     });
 
+    // Line Separator character fix
     text = text.replaceAll('&#8232;', '\n');
+
+    // Wrap bible verse numbers in a <span>
+    var text = text.replace(/([0-9]+)([A-za-z]+)/, function(all, ref, text) {
+        return '<span class="verse-ref">'+ref+'</span> ' + text;
+    });
 
     // Each line will be returned in a list
     lines_output = [];

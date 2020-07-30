@@ -36,3 +36,7 @@ body {
     margin: 0;
     padding: 0;
 }
+span.verse-ref {
+    vertical-align: super;
+    font-size: 0.9rem;
+}
