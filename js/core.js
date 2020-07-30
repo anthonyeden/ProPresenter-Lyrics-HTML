@@ -11,7 +11,12 @@ var Connection = function() {
     this.password = config['Password'];
     this.url = 'ws://' + this.ip  + ':' + this.port + '/stagedisplay';
     this.closing = false;
-    this.clockLocale = config['ClockLocale'];
+
+    if('ClockLocale' in config) {
+        this.clockLocale = config['ClockLocale'];
+    } else {
+        this.clockLocale = "en-AU";
+    }
 
     return this;
 }

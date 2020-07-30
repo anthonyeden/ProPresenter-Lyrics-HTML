@@ -45,9 +45,13 @@
                 html = lyrics_text_html(lines);
                 lyric_nextBlocks[0].innerHTML = html;
             }
-            function callback_clock(lines, locale) {
-                const clockObj = new Date(lines * 1000);
-                clockBlocks[0].innerHTML = clockObj.toLocaleTimeString(locale);
+            function callback_clock(time, locale) {
+                if(isNaN(time)) {
+                    clockBlocks[0].innerHTML = time;
+                } else {
+                    const clockObj = new Date(time * 1000);
+                    clockBlocks[0].innerHTML = clockObj.toLocaleTimeString(locale);
+                }
             }
         </script>
     </head>
