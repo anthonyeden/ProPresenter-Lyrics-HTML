@@ -31,7 +31,7 @@ cp ProPresenter-Lyrics-HTML/config-sample.js ProPresenter-Lyrics-HTML/config.js
 4. To edit the configuration, run this command:
 
 ```
-nano ProPresenter-Lyrics-HTML/config.json
+nano ProPresenter-Lyrics-HTML/config.js
 ```
 
   Ensure you update the IP Address, Port Number & Password for your ProPresenter computer. On your ProPresenter computer, this can be setup in _Preferences > Network_ of your ProPresenter PC.
