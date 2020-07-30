@@ -109,6 +109,13 @@ function lyric_text_cleanup(text) {
     text = text.replaceAll('\r', '\n');
     text = text.trim();
 
+    // Turn a bunch of special chars into HTML Entities
+    var text = text.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+        return '&#'+i.charCodeAt(0)+';';
+    });
+
+    text = text.replaceAll('&#8232;', '\n');
+
     // Each line will be returned in a list
     lines_output = [];
 
