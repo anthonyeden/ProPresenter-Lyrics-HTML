@@ -101,18 +101,38 @@ Connection.prototype.message = function(msg) {
         }
 
     } else if (msg.acn == "fv") {
+    	// Loop first to try and find slide notes
+        for(a in msg.ary) {
+            if (msg.ary[a].acn == "csn") {
+                // Current slide text:
+                text_cs_note = lyric_text_cleanup(msg.ary[a].txt);
+            } else if (msg.ary[a].acn == "nsn") {
+                // Next slide text:
+                text_ns_note = lyric_text_cleanup(msg.ary[a].txt);
+            }
+        }
+
+        // Now find the current/next text and send the callbacks
         for(a in msg.ary) {
             if (msg.ary[a].acn == "cs") {
                 // Current slide text:
                 text = lyric_text_cleanup(msg.ary[a].txt);
                 if(typeof callback_lyrics_current === 'function') {
-                    callback_lyrics_current(text);
+                	if(callback_lyrics_current.length == 2) {
+                		callback_lyrics_current(text, text_cs_note);
+                	} else {
+                		callback_lyrics_current(text);
+                	}
                 }
             } else if (msg.ary[a].acn == "ns") {
                 // Next slide text:
                 text = lyric_text_cleanup(msg.ary[a].txt);
                 if(typeof callback_lyrics_next === 'function') {
-                    callback_lyrics_next(text);
+                	if(callback_lyrics_current.length == 2) {
+                		callback_lyrics_next(text, text_nsn_note);
+                	} else {
+                		callback_lyrics_next(text);
+                	}
                 }
             }
         }
