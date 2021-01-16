@@ -1,15 +1,14 @@
 var ProPresenter = [];
 
+var ConnectedMode = "Primary";
+
 document.addEventListener('DOMContentLoaded', function(){
     ProPresenter[0] = new Connection();
     ProPresenter[0].connect();
 });
 
 var Connection = function() {
-    this.ip = config['IPAddress'];
-    this.port = config['IPPort'];
-    this.password = config['Password'];
-    this.url = 'ws://' + this.ip  + ':' + this.port + '/stagedisplay';
+
     this.closing = false;
 
     if('ClockLocale' in config) {
@@ -22,6 +21,21 @@ var Connection = function() {
 }
 
 Connection.prototype.connect = function() {
+
+    console.log("Trying " + ConnectedMode);
+
+    if(ConnectedMode == 'Primary') {
+        this.ip = config['IPAddress'];
+        this.port = config['IPPort'];
+        this.password = config['Password'];
+    } else {
+        this.ip = config['BackupIPAddress'];
+        this.port = config['BackupIPPort'];
+        this.password = config['BackupPassword'];
+    }
+    
+    this.url = 'ws://' + this.ip  + ':' + this.port + '/stagedisplay';
+
     this.socket = new WebSocket(this.url);
     parentThis = this;
 
@@ -44,8 +58,6 @@ Connection.prototype.connect = function() {
             return false;
         }
 
-        console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
-
         setTimeout(function() {
             parentThis.connect();
         }, 1000);
@@ -54,16 +66,32 @@ Connection.prototype.connect = function() {
     parentThis.socket.onerror = function(err) {
         console.error('Socket encountered error: ', err.message, '. Closing socket');
         parentThis.socket.close();
+
+        if(ConnectedMode == 'Primary') {
+            ConnectedMode = 'Backup';
+        } else {
+            ConnectedMode = 'Primary';
+        }
     };
 }
 
 Connection.prototype.disconnect = function() {
     this.closing = true;
     this.socket.close();
+
+    if(ConnectedMode == 'Primary') {
+        ConnectedMode = 'Backup';
+    } else {
+        ConnectedMode = 'Primary';
+    }
 }
 
 Connection.prototype.message = function(msg) {
     // Receive messages from ProPresenter
+
+	var text_cs_note = "";
+	var text_ns_note = "";
+	var text = "";
 
     if (msg.acn == "ath") {
         if (msg.ath == true) {
